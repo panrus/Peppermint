@@ -1,5 +1,7 @@
 #Peppermint touch slider
 
+## Note: This is a fork of https://github.com/wilddeer/Peppermint with support for dots and slideshow removed, and also some additional callbacks added.
+
 [Check out the demo](http://wd.dizaina.net/en/scripts/peppermint/)
 
 Yet another touch slider. Only better.
