@@ -70,15 +70,6 @@ Peppermint can take settings object as an optional second parameter (first when 
   //transition time when changing slides after touch, ms
   touchSpeed: 300,
 
-  //slideshow enabled
-  slideshow: false,
-
-  //slideshow interval, ms
-  slideshowInterval: 4000,
-
-  //stop slideshow after user interacts with the slider
-  stopSlideshowAfterInteraction: false,
-
   //slide number to start with
   startSlide: 0,
 
@@ -129,10 +120,7 @@ JS:
 
 ```javascript
 var slider = Peppermint(document.getElementById('peppermint'), {
-  slideshow: true,
   speed: 500,
-  slideshowInterval: 5000,
-  stopSlideshowAfterInteraction: true,
   onSetup: function(n) {
     console.log('Peppermint setup done. Slides found: ' + n);
   }
@@ -143,10 +131,7 @@ JS + jQuery:
 
 ```javascript
 $('.peppermint').Peppermint({
-  slideshow: true,
   speed: 500,
-  slideshowInterval: 5000,
-  stopSlideshowAfterInteraction: true,
   onSetup: function(n) {
     console.log('Peppermint setup done. Slides found: ' + n);
   }
@@ -164,12 +149,6 @@ Peppermint exposes a set of functions upon installation. These functions can be 
 `next()` – next slide;
 
 `prev()` – previous slide;
-
-`start()` – start slideshow;
-
-`stop()` – stop slideshow;
-
-`pause()` – pause slideshow until the next slide change;
 
 `getCurrentPos()` – get current slide number;
 

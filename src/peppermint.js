@@ -8,8 +8,6 @@ function Peppermint(_this, options) {
         activeSlide = 0,
         slideWidth,
         slideBlock,
-        slideshowTimeoutId,
-        slideshowActive,
         animationTimer,
         transitionEventName = null;
 
@@ -17,9 +15,6 @@ function Peppermint(_this, options) {
     var o = {
         speed: 300, //transition between slides in ms
         touchSpeed: 300, //transition between slides in ms after touch
-        slideshow: false, //launch slideshow at start
-        slideshowInterval: 4000,
-        stopSlideshowAfterInteraction: false, //stop slideshow after user interaction
         startSlide: 0, //first slide to show
         mouseDrag: true, //enable mouse drag
         disableIfOneSlide: true,
@@ -97,9 +92,6 @@ function Peppermint(_this, options) {
         activeSlide = n;
 
         changePos(-n*slider.width, (speed===undefined?o.speed:speed));
-
-        //reset slideshow timeout whenever active slide is changed for whatever reason
-        stepSlideshow();
 
         //API callbacks
         o.onSlideChange && o.onSlideChange(n);
@@ -203,34 +195,7 @@ function Peppermint(_this, options) {
 
         return changeActiveSlide(n);
     }
-
-    function startSlideshow() {
-        slideshowActive = true;
-        stepSlideshow();
-    }
-
-    //sets or resets timeout before switching to the next slide
-    function stepSlideshow() {
-        if (slideshowActive) {
-            slideshowTimeoutId && clearTimeout(slideshowTimeoutId);
-
-            slideshowTimeoutId = setTimeout(function() {
-                nextSlide();
-            },
-            o.slideshowInterval);
-        }
-    }
-
-    //pauses slideshow until `stepSlideshow` is invoked
-    function pauseSlideshow() {
-        slideshowTimeoutId && clearTimeout(slideshowTimeoutId);
-    }
-
-    function stopSlideshow() {
-        slideshowActive = false;
-        slideshowTimeoutId && clearTimeout(slideshowTimeoutId);
-    }
-
+    
     //this should be invoked when the width of the slider is changed
     function onWidthChange() {
         slider.width = _this.offsetWidth;
@@ -258,8 +223,6 @@ function Peppermint(_this, options) {
                 if (o.mouseDrag) addClass(_this, classes.drag);
             },
             move: function(event, start, diff, speed) {
-                pauseSlideshow(); //pause the slideshow when touch is in progress
-
                 //if it's first slide and moving left or last slide and moving right -- resist!
                 diff.x =
                 diff.x /
@@ -297,7 +260,6 @@ function Peppermint(_this, options) {
 
 
                     if (o.onIncompleteSwipe && skip == 0) o.onIncompleteSwipe(event); // User swiped, but not enough to change the slide
-                    o.stopSlideshowAfterInteraction && stopSlideshow();
                 } else if (o.onIncompleteSwipe) {
                     // User swiped, but vertically, not horizontally.
                     o.onIncompleteSwipe(event);
@@ -381,9 +343,6 @@ function Peppermint(_this, options) {
             changeActiveSlide(o.startSlide, 0);
         }, 0);
 
-        //init slideshow
-        if (o.slideshow) startSlideshow();
-
         touchInit();
 
         //API callback, timeout to expose the API first
@@ -422,15 +381,6 @@ function Peppermint(_this, options) {
         next: nextSlide,
 
         prev: prevSlide,
-
-        //start slideshow
-        start: startSlideshow,
-
-        //stop slideshow
-        stop: stopSlideshow,
-
-        //pause slideshow until the next slide change
-        pause: pauseSlideshow,
 
         //get current slide number
         getCurrentPos: function() {
