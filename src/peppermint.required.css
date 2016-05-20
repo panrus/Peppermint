@@ -28,7 +28,6 @@
 }
 
 .peppermint.peppermint-active,
-.peppermint.peppermint-active .peppermint-dots,
 .peppermint.peppermint-active .peppermint-slides,
 .peppermint.peppermint-active .peppermint-slides > * {
     -webkit-transform: translate3d(0,0,0);

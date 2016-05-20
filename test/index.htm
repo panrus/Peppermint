@@ -153,9 +153,9 @@
         Length: <span class="js-length">?</span>;
     </p>
 
-    <h2>Dots undefined, no mousedrag, slideshow</h2>
+    <h2>No mousedrag, slideshow</h2>
 
-    <div class="peppermint nodots-test">
+    <div class="peppermint nodrag-test">
         <figure>
             <a href="pics/1.jpg" target="_blank"><img src="pics/p1.jpg" alt="cat!"></a>
 
@@ -169,7 +169,7 @@
         </figure>
     </div>
 
-    <h2>Single slide, dots, slideshow</h2>
+    <h2>Single slide, slideshow</h2>
 
     <div class="peppermint singleslide-test">
         <figure>
@@ -179,7 +179,7 @@
         </figure>
     </div>
 
-    <h2>Single slide, dots, slideshow, disableIfOneSlide: false</h2>
+    <h2>Single slide, slideshow, disableIfOneSlide: false</h2>
 
     <div class="peppermint singleslide-enabled-test">
         <figure>
@@ -189,55 +189,9 @@
         </figure>
     </div>
 
-    <h2>Dots first, start from 3rd slide</h2>
+    <h2>Start from 3rd slide</h2>
 
-    <div class="peppermint dotsfirst-test">
-        <figure>
-            <a href="pics/1.jpg" target="_blank"><img src="pics/p1.jpg" alt="cat!"></a>
-
-            <figcaption>cat!</figcaption>
-        </figure>
-
-        <figure>
-            <a href="pics/2.jpg" target="_blank"><img src="pics/p2.jpg" alt="cat!"></a>
-
-            <figcaption>cat!</figcaption>
-        </figure>
-
-        <figure>
-            <a href="pics/3.jpg" target="_blank"><img src="pics/p3.jpg" alt="it's a cat!"></a>
-
-            <figcaption>it's a cat!</figcaption>
-        </figure>
-    </div>
-
-    <h2>Dots container, prepend</h2>
-
-    <div class="peppermint dotstarget-prepend-test">
-        <figure>
-            <a href="pics/1.jpg" target="_blank"><img src="pics/p1.jpg" alt="cat!"></a>
-
-            <figcaption>cat!</figcaption>
-        </figure>
-
-        <figure>
-            <a href="pics/2.jpg" target="_blank"><img src="pics/p2.jpg" alt="cat!"></a>
-
-            <figcaption>cat!</figcaption>
-        </figure>
-
-        <figure>
-            <a href="pics/3.jpg" target="_blank"><img src="pics/p3.jpg" alt="it's a cat!"></a>
-
-            <figcaption>it's a cat!</figcaption>
-        </figure>
-    </div>
-
-    <div class="dotstarget" style="border: 1px dashed crimson; padding: 15px;"><p>dots container</p></div>
-
-    <h2>Dots container</h2>
-
-    <div class="peppermint dotstarget-test">
+    <div class="peppermint thirdslide-test">
         <figure>
             <a href="pics/1.jpg" target="_blank"><img src="pics/p1.jpg" alt="cat!"></a>
 
@@ -298,7 +252,6 @@
 
             var block = document.getElementById('peppermint');
             var slider = Peppermint(block, {
-                dots: true,
                 slideshow: true,
                 speed: 500,
                 slideshowInterval: 5000,
@@ -314,7 +267,6 @@
             var jqtestSlider = $('.jquery-test');
 
             jqtestSlider.Peppermint({
-                dots: true,
                 slideshow: true,
                 onSlideChange: function(n) {
                     $('.js-n').text(n);
@@ -341,41 +293,25 @@
                 }
             });
 
-            $('.nodots-test').Peppermint({
+            $('.nodrag-test').Peppermint({
                 slideshow: true,
                 mouseDrag: false
             });
 
             $('.singleslide-test').Peppermint({
                 slideshow: true,
-                dots: true
             });
 
             $('.singleslide-enabled-test').Peppermint({
                 slideshow: true,
-                dots: true,
                 disableIfOneSlide: false
             });
 
-            $('.dotsfirst-test').Peppermint({
-                dots: true,
-                dotsPrepend: true,
+            $('.thirdslide-test').Peppermint({
                 startSlide: 2
             });
 
-            $('.dotstarget-prepend-test').Peppermint({
-                dots: true,
-                dotsContainer: $('.dotstarget')[0],
-                dotsPrepend: true
-            });
-
-            $('.dotstarget-test').Peppermint({
-                dots: true,
-                dotsContainer: $('.dotstarget')[0]
-            });
-
             $('.slides-container-inner-test').Peppermint({
-                dots: true,
                 slidesContainer: $('.slides-container-inner-test .slides-container')[0]
             });
 

@@ -93,16 +93,6 @@ Peppermint can take settings object as an optional second parameter (first when 
   //Don't forget to change the stylesheet appropriately!
   cssPrefix: 'peppermint-',
 
-  //show dots
-  dots: false,
-
-  //prepend dots to dotsContainer (default is append)
-  dotsPrepend: false,
-
-  //Element to contain dots, defaults to Peppermint's root element.
-  //Can be anywhere on the page.
-  dotsContainer: undefined,
-
   //element containing slides, defaults to Peppermint's root element
   slidesContainer: undefined,
 
@@ -139,7 +129,6 @@ JS:
 
 ```javascript
 var slider = Peppermint(document.getElementById('peppermint'), {
-  dots: true,
   slideshow: true,
   speed: 500,
   slideshowInterval: 5000,
@@ -154,7 +143,6 @@ JS + jQuery:
 
 ```javascript
 $('.peppermint').Peppermint({
-  dots: true,
   slideshow: true,
   speed: 500,
   slideshowInterval: 5000,

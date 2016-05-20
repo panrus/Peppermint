@@ -1,14 +1,12 @@
 function Peppermint(_this, options) {
     var slider = {
             slides: [],
-            dots: [],
             left: 0
         },
         slidesNumber,
         flickThreshold = 200, //Flick threshold (ms)
         activeSlide = 0,
         slideWidth,
-        dotBlock,
         slideBlock,
         slideshowTimeoutId,
         slideshowActive,
@@ -26,9 +24,6 @@ function Peppermint(_this, options) {
         mouseDrag: true, //enable mouse drag
         disableIfOneSlide: true,
         cssPrefix: 'peppermint-',
-        dots: false, //show dots
-        dotsPrepend: false, //dots before slides
-        dotsContainer: undefined,
         slidesContainer: undefined,
         onIncompleteSwipe: undefined, //user has dragged the slide, but it didn't trigger a slide change
         beforeSlideChange: undefined, //just before slide change
@@ -46,8 +41,6 @@ function Peppermint(_this, options) {
         mouse: o.cssPrefix + 'mouse',
         drag: o.cssPrefix + 'drag',
         slides: o.cssPrefix + 'slides',
-        dots: o.cssPrefix + 'dots',
-        activeDot: o.cssPrefix + 'active-dot',
         mouseClicked: o.cssPrefix + 'mouse-clicked'
     };
 
@@ -97,15 +90,6 @@ function Peppermint(_this, options) {
         }
         else if (n>slidesNumber-1) {
             n = slidesNumber-1;
-        }
-
-        //change active dot
-        for (var i = slider.dots.length - 1; i >= 0; i--) {
-            removeClass(slider.dots[i], classes.activeDot);
-        }
-
-        if (slider.dots[n]) {
-            addClass(slider.dots[n], classes.activeDot);
         }
 
         o.beforeSlideChange && o.beforeSlideChange(activeSlide, n);
@@ -326,8 +310,7 @@ function Peppermint(_this, options) {
     }
 
     function setup() {
-        var slideSource = o.slidesContainer || _this,
-            dotsTarget = o.dotsContainer || _this;
+        var slideSource = o.slidesContainer || _this;
 
         if (o.disableIfOneSlide && slideSource.children.length <= 1) return;
 
@@ -339,51 +322,11 @@ function Peppermint(_this, options) {
         slideBlock = o.slidesContainer || document.createElement('div');
         addClass(slideBlock, classes.slides);
 
-        //get slides & generate dots
+        //get slides
         for (var i = 0, l = slideSource.children.length; i < l; i++) {
             var slide = slideSource.children[i];
 
             slider.slides.push(slide);
-
-            if (o.dots) {
-                var dot = document.createElement('li');
-
-                //`tabindex` makes dots tabbable
-                dot.setAttribute('tabindex', '0');
-                dot.setAttribute('role', 'button');
-
-                dot.innerHTML = '<span></span>';
-
-                (function(x, dotClosure) {
-                    //bind events to dots
-                    addEvent(dotClosure, 'click', function(event) {
-                        changeActiveSlide(x);
-                        o.stopSlideshowAfterInteraction && stopSlideshow();
-                    });
-
-                    //Bind the same function to Enter key except for the `blur` part -- I dont't want
-                    //the focus to be lost when the user is using his keyboard to navigate.
-                    addEvent(dotClosure, 'keyup', function(event) {
-                        if (event.keyCode == 13) {
-                            changeActiveSlide(x);
-                            o.stopSlideshowAfterInteraction && stopSlideshow();
-                        }
-                    });
-
-                    //Don't want to disable outlines completely for accessibility reasons.
-                    //Instead, add class with `outline: 0` on mouseup and remove it on blur.
-                    addEvent(dotClosure, 'mouseup', function(event) {
-                        addClass(dotClosure, classes.mouseClicked);
-                    });
-
-                    //capturing fixes IE bug
-                    addEvent(dotClosure, 'blur', function() {
-                        removeClass(dotClosure, classes.mouseClicked);
-                    }, true);
-                })(i, dot);
-
-                slider.dots.push(dot);
-            }
 
             //This solves tabbing problems:
             //When an element inside a slide catches focus we switch to that slide
@@ -420,23 +363,6 @@ function Peppermint(_this, options) {
         }
 
         if (!o.slidesContainer) _this.appendChild(slideBlock);
-
-        //append dots
-        if (o.dots && slidesNumber > 1) {
-            dotBlock = document.createElement('ul');
-            addClass(dotBlock, classes.dots);
-
-            for (var i = 0, l = slider.dots.length; i < l; i++) {
-                dotBlock.appendChild(slider.dots[i]);
-            }
-
-            if (o.dotsPrepend) {
-                dotsTarget.insertBefore(dotBlock,dotsTarget.firstChild);
-            }
-            else {
-                dotsTarget.appendChild(dotBlock);
-            }
-        }
 
         transitionEventName = getTransitionEventName();
 
