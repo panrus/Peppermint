@@ -6,7 +6,6 @@ function Peppermint(_this, options) {
         slidesNumber,
         flickThreshold = 200, //Flick threshold (ms)
         activeSlide = 0,
-        slideWidth,
         slideBlock,
         animationTimer,
         transitionEventName = null;
@@ -308,8 +307,6 @@ function Peppermint(_this, options) {
         }
 
         slidesNumber = slider.slides.length;
-
-        slideWidth = 100/slidesNumber;
 
         addClass(_this, classes.active);
         removeClass(_this, classes.inactive);
