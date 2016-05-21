@@ -197,13 +197,7 @@ function Peppermint(_this, options) {
     
     //this should be invoked when the width of the slider is changed
     function onWidthChange() {
-        slider.width = _this.offsetWidth;
-
-        //have to do this in `px` because of webkit's rounding errors :-(
-        slideBlock.style.width = slider.width*slidesNumber+'px';
-        for (var i = 0; i < slidesNumber; i++) {
-            slider.slides[i].style.width = slider.width+'px';
-        }
+        setupSliderDimensions();
         changePos(-activeSlide*slider.width);
     }
 
@@ -270,6 +264,16 @@ function Peppermint(_this, options) {
         });
     }
 
+    function setupSliderDimensions(){
+        slider.width = _this.offsetWidth;
+
+        // have to do this in `px` because of webkit's rounding errors :-(
+        slideBlock.style.width = slider.width*slidesNumber+'px';
+        for (var i = 0; i < slidesNumber; i++) {
+            slider.slides[i].style.width = slider.width+'px';
+        }
+    }
+
     function setup() {
         var slideSource = o.slidesContainer || _this;
 
@@ -311,17 +315,14 @@ function Peppermint(_this, options) {
         addClass(_this, classes.active);
         removeClass(_this, classes.inactive);
         o.mouseDrag && addClass(_this, classes.mouse);
+        setupSliderDimensions();
 
-        slider.width = _this.offsetWidth;
-
-        //had to do this in `px` because of webkit's rounding errors :-(
-        slideBlock.style.width = slider.width*slidesNumber+'px';
-        for (var i = 0; i < slidesNumber; i++) {
-            slider.slides[i].style.width = slider.width+'px';
-            slideBlock.appendChild(slider.slides[i]);
+        if (!o.slidesContainer) {
+            _this.appendChild(slideBlock);
+            for (var i = 0; i < slidesNumber; i++) {
+                slideBlock.appendChild(slider.slides[i]);
+            }
         }
-
-        if (!o.slidesContainer) _this.appendChild(slideBlock);
 
         transitionEventName = getTransitionEventName();
 
