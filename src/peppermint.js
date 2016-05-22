@@ -18,6 +18,7 @@ function Peppermint(_this, options) {
         mouseDrag: true, //enable mouse drag
         disableIfOneSlide: true,
         cssPrefix: 'peppermint-',
+        slideHeightRatio: undefined,
         slidesContainer: undefined,
         onIncompleteSwipe: undefined, //user has dragged the slide, but it didn't trigger a slide change
         beforeSlideChange: undefined, //just before slide change
@@ -268,7 +269,9 @@ function Peppermint(_this, options) {
         slider.width = _this.offsetWidth;
 
         // have to do this in `px` because of webkit's rounding errors :-(
-        slideBlock.style.width = slider.width*slidesNumber+'px';
+        slideBlock.style.width = slider.width * slidesNumber + 'px';
+        if (o.slideHeightRatio) slideBlock.style.height = Math.ceil(slider.width * o.slideHeightRatio) + 'px';
+
         for (var i = 0; i < slidesNumber; i++) {
             slider.slides[i].style.width = slider.width+'px';
         }

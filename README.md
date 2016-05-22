@@ -89,6 +89,9 @@ Peppermint can take settings object as an optional second parameter (first when 
   //element containing slides, defaults to Peppermint's root element
   slidesContainer: undefined,
 
+  //set the slideContainer height as a ratio of it's width
+  slideHeightRatio: undefined,
+
   //Callback function, called if the user swipes, but the slide change isn't triggered.
   //Receives the touch end / mouse up event as a parameter.
   //This can be used to handle cases where the user wanted to touch / click the slide without swiping.
