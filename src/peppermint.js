@@ -79,6 +79,11 @@ function Peppermint(_this, options) {
         el.className = el.className.replace(new RegExp('(\\s+|^)'+cl+'(\\s+|$)', 'g'), ' ').replace(/^\s+|\s+$/g, '');
     }
 
+    function cannotPageForwards(newSlideNumber) {
+        var lastShownSlide = (newSlideNumber+1) * numberOfSimultaneousSlides;
+        return lastShownSlide >= slidesNumber;
+    }
+
     //n - slide number (starting from 0)
     //speed - transition in ms, can be omitted
     function changeActiveSlide(n, speed) {
@@ -89,7 +94,7 @@ function Peppermint(_this, options) {
             n = slidesNumber-1;
         }
 
-        o.beforeSlideChange && o.beforeSlideChange(activeSlide, n);
+        o.beforeSlideChange && o.beforeSlideChange(activeSlide, n, n == 0, cannotPageForwards(n));
 
         activeSlide = n;
 

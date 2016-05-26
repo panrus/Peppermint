@@ -103,7 +103,9 @@ Peppermint can take settings object as an optional second parameter (first when 
   onIncompleteSwipe: undefined,
 
   //Callback function, runs just before slide change
-  //Receives previous and new slide numbers as parameters.
+  //Receives previous and new slide numbers as parameters,
+  //and 2 parameters indicating if the slider cannot be paged forwards or backwards.
+  //Designed to allow previous / next buttons to be disabled.
   beforeSlideChange: undefined,
 
   //Callback function, runs at slide change.
