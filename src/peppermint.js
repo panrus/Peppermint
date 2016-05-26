@@ -4,6 +4,7 @@ function Peppermint(_this, options) {
             left: 0
         },
         slidesNumber,
+        numberOfSimultaneousSlides = 1,
         flickThreshold = 200, //Flick threshold (ms)
         activeSlide = 0,
         slideBlock,
@@ -19,6 +20,7 @@ function Peppermint(_this, options) {
         disableIfOneSlide: true,
         cssPrefix: 'peppermint-',
         slideHeightRatio: undefined,
+        showMultiple: undefined,
         slidesContainer: undefined,
         onIncompleteSwipe: undefined, //user has dragged the slide, but it didn't trigger a slide change
         beforeSlideChange: undefined, //just before slide change
@@ -266,6 +268,14 @@ function Peppermint(_this, options) {
     }
 
     function setupSliderDimensions(){
+      if (o.showMultiple) {
+        var slideWidth = slider.slides[0].offsetWidth;
+        _this.style.width = 'auto';
+        numberOfSimultaneousSlides = Math.floor(_this.offsetWidth / slideWidth);
+        slider.width = numberOfSimultaneousSlides * slideWidth;
+        _this.style.width = slider.width + 'px';
+        slideBlock.style.width = slideWidth * slidesNumber + 'px';
+      } else {
         slider.width = _this.offsetWidth;
 
         // have to do this in `px` because of webkit's rounding errors :-(
@@ -275,6 +285,7 @@ function Peppermint(_this, options) {
         for (var i = 0; i < slidesNumber; i++) {
             slider.slides[i].style.width = slider.width+'px';
         }
+      }
     }
 
     function setup() {
@@ -308,7 +319,7 @@ function Peppermint(_this, options) {
                     setTimeout(function() {
                         _this.scrollLeft = 0;
                     }, 0);
-                    changeActiveSlide(x);
+                    changeActiveSlide(Math.floor(x / numberOfSimultaneousSlides));
                 }, true);
             })(i);
         }
