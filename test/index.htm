@@ -228,6 +228,7 @@
 
             var block = document.getElementById('peppermint');
             var slider = Peppermint(block, {
+                slideWidth: 'full',
                 speed: 500,
                 onSetup: function(n) {
                     window.console && console.log('Peppermint setup done. Slides found: ' + n);
@@ -240,6 +241,7 @@
             var jqtestSlider = $('.jquery-test');
 
             jqtestSlider.Peppermint({
+                slideWidth: 'full',
                 onSlideChange: function(n) {
                     $('.js-n').text(n);
                     $('.js-pos').text(jqtestSlider.data('Peppermint').getCurrentPos());
@@ -262,14 +264,17 @@
             });
 
             $('.nodrag-test').Peppermint({
+                slideWidth: 'full',
                 mouseDrag: false
             });
 
             $('.thirdslide-test').Peppermint({
+                slideWidth: 'full',
                 startSlide: 2
             });
 
             $('.slides-container-inner-test').Peppermint({
+                slideWidth: 'full',
                 slidesContainer: $('.slides-container-inner-test .slides-container')[0]
             });
 

@@ -3,10 +3,11 @@ function Peppermint(_this, options) {
             slides: [],
             left: 0
         },
-        slidesNumber,
-        numberOfSimultaneousSlides = 1,
+        totalSlides,
+        slidesPerPage,
+        lastPageIndex,
         flickThreshold = 200, //Flick threshold (ms)
-        activeSlide = 0,
+        activePage = 0,
         slideBlock,
         animationTimer,
         transitionEventName = null;
@@ -20,11 +21,11 @@ function Peppermint(_this, options) {
         disableIfOneSlide: true,
         cssPrefix: 'peppermint-',
         slideHeightRatio: undefined,
-        showMultiple: undefined,
+        slideWidth: undefined,
         slidesContainer: undefined,
         onIncompleteSwipe: undefined, //user has dragged the slide, but it didn't trigger a slide change
-        beforeSlideChange: undefined, //just before slide change
-        onSlideChange: undefined, //slide change callback
+        beforePageChange: undefined, //just before slide change
+        onPageChange: undefined, //slide change callback
         onTransitionEnd: undefined, //after final animation completed
         onSetup: undefined //setup callback
     };
@@ -79,29 +80,24 @@ function Peppermint(_this, options) {
         el.className = el.className.replace(new RegExp('(\\s+|^)'+cl+'(\\s+|$)', 'g'), ' ').replace(/^\s+|\s+$/g, '');
     }
 
-    function cannotPageForwards(newSlideNumber) {
-        var lastShownSlide = (newSlideNumber+1) * numberOfSimultaneousSlides;
-        return lastShownSlide >= slidesNumber;
-    }
-
-    //n - slide number (starting from 0)
+    //n - page number (starting from 0)
     //speed - transition in ms, can be omitted
-    function changeActiveSlide(n, speed) {
+    function changeActivePage(n, speed) {
         if (n<0) {
             n = 0;
         }
-        else if (n>slidesNumber-1) {
-            n = slidesNumber-1;
+        else if (n>lastPageIndex) {
+            n = lastPageIndex;
         }
 
-        o.beforeSlideChange && o.beforeSlideChange(activeSlide, n, n == 0, cannotPageForwards(n));
+        o.beforePageChange && o.beforePageChange(activePage, n, n == 0, n == lastPageIndex);
 
-        activeSlide = n;
+        activePage = n;
 
         changePos(-n*slider.width, (speed===undefined?o.speed:speed));
 
         //API callbacks
-        o.onSlideChange && o.onSlideChange(n);
+        o.onPageChange && o.onPageChange(n);
 
         if (o.onTransitionEnd && (speed == 0 || transitionEventName === null)) {
             // If there was no transition or is transition end is not supported,
@@ -183,30 +179,30 @@ function Peppermint(_this, options) {
         slider.left = pos;
     }
 
-    function nextSlide() {
-        var n = activeSlide + 1;
+    function nextPage() {
+        var n = activePage + 1;
 
-        if (n > slidesNumber - 1) {
+        if (n > lastPageIndex) {
             n = 0;
         }
 
-        return changeActiveSlide(n);
+        return changeActivePage(n);
     }
 
-    function prevSlide() {
-        var n = activeSlide - 1;
+    function prevPage() {
+        var n = activePage - 1;
 
         if (n < 0) {
-            n = slidesNumber - 1;
+            n = lastPageIndex;
         }
 
-        return changeActiveSlide(n);
+        return changeActivePage(n);
     }
-    
+
     //this should be invoked when the width of the slider is changed
     function onWidthChange() {
         setupSliderDimensions();
-        changePos(-activeSlide*slider.width);
+        changeActivePage(activePage, 0);
     }
 
     function addEvent(el, event, func, bool) {
@@ -228,8 +224,8 @@ function Peppermint(_this, options) {
                 diff.x =
                 diff.x /
                     (
-                        (!activeSlide && diff.x > 0
-                        || activeSlide == slidesNumber - 1 && diff.x < 0)
+                        (!activePage && diff.x > 0
+                        || activePage == lastPageIndex && diff.x < 0)
                         ?
                         (Math.abs(diff.x)/slider.width*2 + 1)
                         :
@@ -237,7 +233,7 @@ function Peppermint(_this, options) {
                     );
 
                 //change position of the slider appropriately
-                changePos(diff.x - slider.width*activeSlide);
+                changePos(diff.x - slider.width*activePage);
             },
             end: function(event, start, diff, speed) {
                 if (diff.x) {
@@ -253,10 +249,10 @@ function Peppermint(_this, options) {
                     skip += (flick?1:0);
 
                     if (diff.x < 0) {
-                        changeActiveSlide(activeSlide+skip, o.touchSpeed);
+                        changeActivePage(activePage+skip, o.touchSpeed);
                     }
                     else {
-                        changeActiveSlide(activeSlide-skip, o.touchSpeed);
+                        changeActivePage(activePage-skip, o.touchSpeed);
                     }
 
 
@@ -273,24 +269,30 @@ function Peppermint(_this, options) {
     }
 
     function setupSliderDimensions(){
-      if (o.showMultiple) {
-        var slideWidth = slider.slides[0].offsetWidth;
-        _this.style.width = 'auto';
-        numberOfSimultaneousSlides = Math.floor(_this.offsetWidth / slideWidth);
-        slider.width = numberOfSimultaneousSlides * slideWidth;
-        _this.style.width = slider.width + 'px';
-        slideBlock.style.width = slideWidth * slidesNumber + 'px';
-      } else {
-        slider.width = _this.offsetWidth;
+        if (o.slideWidth == undefined || o.slideWidth == 'full') {
+            slider.width = _this.offsetWidth;
 
-        // have to do this in `px` because of webkit's rounding errors :-(
-        slideBlock.style.width = slider.width * slidesNumber + 'px';
-        if (o.slideHeightRatio) slideBlock.style.height = Math.ceil(slider.width * o.slideHeightRatio) + 'px';
-
-        for (var i = 0; i < slidesNumber; i++) {
-            slider.slides[i].style.width = slider.width+'px';
+            if (o.slideWidth == undefined) {
+                var slideWidth = slider.slides[0].offsetWidth;
+                slidesPerPage = Math.round(slider.width / slideWidth);
+            } else {
+                slidesPerPage = 1;
+                // have to do this in `px` because of webkit's rounding errors :-(
+                slideBlock.style.width = slider.width * totalSlides + 'px';
+                for (var i = 0; i < totalSlides; i++) {
+                    slider.slides[i].style.width = slider.width + 'px';
+                }
+          }
+        } else {
+            _this.style.width = null;
+            slidesPerPage = Math.floor(_this.offsetWidth / o.slideWidth);
+            slider.width = slidesPerPage * o.slideWidth;
+            var totalPages = Math.ceil(totalSlides / slidesPerPage);
+            _this.style.width = slider.width + 'px';
+            slideBlock.style.width = slider.width * totalPages + 'px';
         }
-      }
+        if (o.slideHeightRatio) slideBlock.style.height = Math.ceil(slider.width * o.slideHeightRatio) + 'px';
+        lastPageIndex = Math.ceil(totalSlides / slidesPerPage) - 1;
     }
 
     function setup() {
@@ -324,12 +326,12 @@ function Peppermint(_this, options) {
                     setTimeout(function() {
                         _this.scrollLeft = 0;
                     }, 0);
-                    changeActiveSlide(Math.floor(x / numberOfSimultaneousSlides));
+                    changeActivePage(Math.floor(x / slidesPerPage));
                 }, true);
             })(i);
         }
 
-        slidesNumber = slider.slides.length;
+        totalSlides = slider.slides.length;
 
         addClass(_this, classes.active);
         removeClass(_this, classes.inactive);
@@ -338,7 +340,7 @@ function Peppermint(_this, options) {
 
         if (!o.slidesContainer) {
             _this.appendChild(slideBlock);
-            for (var i = 0; i < slidesNumber; i++) {
+            for (var i = 0; i < totalSlides; i++) {
                 slideBlock.appendChild(slider.slides[i]);
             }
         }
@@ -347,7 +349,7 @@ function Peppermint(_this, options) {
 
         if (o.onTransitionEnd && transitionEventName) {
             addEvent(slideBlock, transitionEventName, function() {
-                o.onTransitionEnd(activeSlide);
+                o.onTransitionEnd(activePage);
             }, false);
         }
 
@@ -357,14 +359,14 @@ function Peppermint(_this, options) {
 
         //init first slide, timeout to expose the API first
         setTimeout(function() {
-            changeActiveSlide(o.startSlide, 0);
+            changeActivePage(o.startSlide, 0);
         }, 0);
 
         touchInit();
 
         //API callback, timeout to expose the API first
         setTimeout(function() {
-            o.onSetup && o.onSetup(slidesNumber);
+            o.onSetup && o.onSetup(totalSlides);
         }, 0);
     }
 
@@ -391,26 +393,35 @@ function Peppermint(_this, options) {
 
     //expose the API
     return {
-        slideTo: function(slide, speed) {
-            return changeActiveSlide(parseInt(slide, 10), speed);
+        slideTo: function(newPageNumber, speed) {
+            if (newPageNumber != activePage) changeActivePage(newPageNumber, speed);
+            return activePage;
         },
 
-        next: nextSlide,
+        next: nextPage,
 
-        prev: prevSlide,
+        prev: prevPage,
 
         //get current slide number
         getCurrentPos: function() {
-            return activeSlide;
+            return activePage;
         },
 
-        //get total number of slides
-        getSlidesNumber: function() {
-            return slidesNumber;
+        //get total number of pages
+        getTotalPages: function() {
+            return lastPageIndex+1;
+        },
+
+        getSlidesPerPage: function() {
+            return slidesPerPage;
         },
 
         //invoke this when the slider's width is changed
-        recalcWidth: onWidthChange
+        recalcWidth: onWidthChange,
+
+        getSliderDimensions: function() {
+            return  [_this.offsetWidth, _this.offsetHeight];
+        }
     };
 };
 

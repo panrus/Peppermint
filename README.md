@@ -92,10 +92,10 @@ Peppermint can take settings object as an optional second parameter (first when 
   //set the slideContainer height as a ratio of it's width
   slideHeightRatio: undefined,
 
-  //set showMultiple to true if you want to preserve the slide size.
-  //In this mode, Peppermint will resize the slider to fit as many complete slides on as possible.
+  //set slideWidth to a width (in pixels) to make Peppermint fit in as many complete slides on as possible.
   //Can be useful for responsive designs.
-  showMultiple: undefined,
+  //Use the keyword 'full' to make Peppermint resize each slide to the full width of the slider.
+  slideWidth: undefined,
 
   //Callback function, called if the user swipes, but the slide change isn't triggered.
   //Receives the touch end / mouse up event as a parameter.
